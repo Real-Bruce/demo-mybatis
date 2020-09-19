@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bruce.dao.IUserDao">
+
+    <!-- 配置restMap -->
+    <resultMap id="userMap" type="user">
+        <id property="userId" column="id"/>
+        <result property="userName" column="username"/>
+        <result property="userBirthday" column="birthday"/>
+        <result property="userSex" column="sex"/>
+        <result property="userAddress" column="address"/>
+        <!-- 配置user中的account集合映射 -->
+        <collection property="accounts" ofType="account" select="cn.bruce.dao.IAccountDao.getAccountByUid" column="id"/>
+    </resultMap>
+
+    <!-- 查询所有 -->
+    <select id="getUsers" resultMap="userMap">
+        select * from user
+    </select>
+
+    <!-- 根据id获取用户名 -->
+    <select id="getUserById" parameterType="int" resultType="user">
+        select * from user where id = #{userId}
+    </select>
+
+</mapper>

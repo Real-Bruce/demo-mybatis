@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bruce.dao.IUserDao">
+    <resultMap id="userAccountMap" type="user">
+        <!-- 配置user实体类和列的对应 -->
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="birthday" column="birthday"/>
+        <result property="sex" column="sex"/>
+        <result property="address" column="address"/>
+
+        <!-- 配置accounts实体类和列的对应 -->
+        <collection property="accounts" ofType="account">
+            <id property="id" column="id"/>
+            <result property="uid" column="uid"/>
+            <result property="money" column="money"/>
+        </collection>
+    </resultMap>
+
+    <!-- 查询全部用户的全部账户 -->
+    <select id="getUsers" resultMap="userAccountMap">
+        select * from user u left outer join account a on u.id = a.uid
+    </select>
+
+    <!-- 根据id查询用户账户 -->
+    <select id="getUserById" parameterType="int" resultMap="userAccountMap">
+        select * from user where id = #{userId}
+    </select>
+</mapper>

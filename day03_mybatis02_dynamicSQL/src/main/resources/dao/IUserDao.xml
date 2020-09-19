@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bruce.dao.IUserDao">
+
+    <!-- 配置实体类和数据库列的对应 -->
+    <resultMap id="userMap" type="user">
+        <id property="userId" column="id"></id>
+        <result property="userName" column="username"/>
+        <result property="userBirthday" column="birthday"/>
+        <result property="userSex" column="sex"/>
+        <result property="userAddress" column="address"/>
+    </resultMap>
+
+    <!-- 配置sql查询 -->
+
+    <!-- 提取sql语句 -->
+    <sql id="getUsers">
+        select * from user
+        order by birthday desc
+    </sql>
+
+    <!-- 查询所有 -->
+    <select id="getUsers" resultMap="userMap">
+        <include refid="getUsers"></include>
+    </select>
+
+    <!-- 根据id查询 -->
+    <select id="getUserById" parameterType="int" resultMap="userMap">
+        select * from user where id = #{userId}
+    </select>
+
+    <!-- 根据名称模糊查询 -->
+    <select id="getUserByName" parameterType="String" resultMap="userMap">
+        select * from user where username like '%${userName}%'
+    </select>
+
+    <!-- 根据QueryVo查询用户 -->
+    <select id="getUserByQueryVo" parameterType="cn.bruce.domain.QueryVo" resultMap="userMap">
+        select * from user where username like '%${user.userName}%'
+    </select>
+
+    <!-- 根据queryVo中的id集合实现查询用户列表 -->
+    <select id="getUserByIds" parameterType="queryVo" resultMap="userMap">
+        <include refid="getUsers"></include>
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                <foreach collection="ids" open="and id in (" close=")" item="userId" separator=",">
+                    #{userId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <!-- 多条件查询，动态sql拼装 -->
+    <select id="getUserByCondition" parameterType="cn.bruce.domain.User" resultMap="userMap">
+        select * from user
+        <where>
+            <if test="userName != null">
+                and username like '%${userName}%'
+            </if>
+            <if test="userSex != null">
+                and sex = #{userSex}
+            </if>
+            <if test="userAddress != null">
+                and address like '%${userAddress}%'
+            </if>
+        </where>
+        order by birthday desc
+    </select>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bruce.dao.IUserDao">
+
+    <!-- 建立查询结果列名和实体类属性名之间的对应关系 -->
+    <resultMap id="userMap" type="user">
+        <!-- 关键字对应 -->
+        <id property="userId" column="id"/>
+        <!-- 非关键字对应 -->
+        <result property="userName" column="username"/>
+        <result property="userSex" column="sex"/>
+        <result property="userBirthday" column="birthday"/>
+        <result property="userAddress" column="address"/>
+    </resultMap>
+
+    <!-- 配置查询相关的语句 -->
+
+    <!-- 查询所有用户 -->
+    <select id="getUsers" resultMap="userMap">
+        select * from user;
+    </select>
+
+    <!-- 保存用户 -->
+    <insert id="saveUser" parameterType="user">
+        <selectKey keyProperty="userId" keyColumn="id" resultType="int" order="AFTER">
+            select last_insert_id();
+        </selectKey>
+        insert into user(username, sex, birthday, address) value (#{userName}, #{userSex}, #{userBirthday},
+        #{userAddress})
+    </insert>
+
+    <!-- 更新操作 -->
+    <update id="updateUserById" parameterType="user">
+        update user set username = #{userName}, sex = #{userSex}, birthday = #{userBirthday}, address =
+        #{userAddress} where id = #{userId}
+    </update>
+
+    <!-- 根据id查询用户 -->
+    <select id="getUserById" parameterType="int" resultMap="userMap">
+        select * from user where id = #{userId}
+    </select>
+
+    <!-- 根据id删除用户 -->
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        delete from user where id = #{userId}
+    </delete>
+
+    <!-- 根据名称查询 -->
+    <select id="getUserByName" parameterType="string" resultMap="userMap">
+        select * from user where username like #{userName}
+    </select>
+
+    <!-- 获取用户记录总条目数 -->
+    <select id="getUserTotal" resultType="int">
+        select count(id) from user
+    </select>
+
+    <!-- 根据queryVo的条件查询用户 -->
+    <select id="getUserByQueryVo" parameterType="cn.bruce.domain.QueryVo" resultMap="userMap">
+        select * from user where username like '%${user.userName}%'
+    </select>
+</mapper>
