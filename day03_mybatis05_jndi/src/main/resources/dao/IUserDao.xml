@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.bruce.dao.IUserDao">
+    <resultMap id="userMap" type="user">
+        <id property="userId" column="id"/>
+        <result property="userName" column="username"/>
+        <result property="userBirthday" column="birthday"/>
+        <result property="userSex" column="sex"/>
+        <result property="userAddress" column="address"/>
+    </resultMap>
+
+    <insert id="saveUser" parameterType="user">
+        <selectKey keyProperty="userId" keyColumn="id" resultType="int" order="AFTER">
+            select last_insert_id();
+        </selectKey>
+        insert into user(username, birthday, sex, address)
+        values (#{userName}, #{userBirthday}, #{userSex}, #{userAddress})
+    </insert>
+
+    <delete id="deleteUserById" parameterType="java.lang.Integer">
+        delete from user where id = #{userId}
+    </delete>
+
+    <update id="updateUser" parameterType="user">
+        update user set username = #{userName}, birthday = #{userBirthday}, sex = #{userSex}, address = #{userAddress}
+    </update>
+
+    <select id="getUsers" resultMap="userMap">
+        select * from user
+    </select>
+
+    <select id="getUserById" parameterType="int" resultMap="userMap">
+        select * from user where id = #{userId}
+    </select>
+
+    <select id="getUserByName" parameterType="String" resultMap="userMap">
+        select * from user where username like '%${userName}%'
+    </select>
+
+    <select id="getTotalUser" resultType="int">
+        select count(*) from user 
+    </select>
+    
+    <select id="getUserByQueryVo" parameterType="cn.bruce.domain.QueryVo" resultMap="userMap">
+        select * from user where username like '%${user.username}%'
+    </select>
+</mapper>
